@@ -1,9 +1,11 @@
 import mongoose, {Types} from "mongoose";
 import User from "./User";
 
-const TaskSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const TaskSchema = new Schema({
     user: {
-        type: [mongoose.Schema.Types.ObjectId, 'User not found'],
+        type: [Schema.Types.ObjectId, 'User not found'],
         ref: "User",
         required: true,
         validate: {
@@ -16,13 +18,13 @@ const TaskSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true,
+        required:  [true, 'Заголовок обьязательное поле'],
     },
     description: String,
     status: {
         type: String,
         enum: ['new', 'in_progress', 'complete'],
-        required: true,
+        required:  [true, 'Статус обьязательное поле'],
     }
 });
 

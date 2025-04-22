@@ -21,11 +21,11 @@ const UserSchema = new mongoose.Schema<
     username: {
         type: String,
         required: true,
-        unique: true,
+        unique:  [true, 'Имя пользователя обьязательное поле'],
     },
     password: {
         type: String,
-        required: true,
+        required:  [true, 'Пароль обьязательное поле'],
     },
     token: {
         type: String,

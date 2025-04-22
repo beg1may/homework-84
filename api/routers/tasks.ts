@@ -1,5 +1,5 @@
 import express from "express";
-import {Error} from "mongoose";
+import {deleteModel, Error} from "mongoose";
 import Task from "../models/Task";
 import auth, {RequestWithUser} from "../middleware/auth";
 
@@ -39,7 +39,7 @@ tasksRouter.put("/:id", auth, async (req, res, next) => {
         const task = await Task.findOne({_id: id, user: user._id});
 
         if (!task) {
-            res.status(404).send({error: 'You cannot edit just your task'});
+            res.status(403).send({error: 'You cannot edit just your task'});
             return;
         }
 
@@ -52,7 +52,6 @@ tasksRouter.put("/:id", auth, async (req, res, next) => {
             { new: true, runValidators: true}
             );
 
-        console.log(taskUpdate);
         res.send(taskUpdate);
     } catch (error) {
         if(error instanceof  Error.ValidationError) {
@@ -63,5 +62,23 @@ tasksRouter.put("/:id", auth, async (req, res, next) => {
         next(error);
     }
 });
+
+tasksRouter.delete("/:id", auth, async (req, res, next) => {
+    const user = (req as RequestWithUser).user;
+    const id = req.params.id;
+    try {
+        const task = await Task.findOne({_id: id, user: user._id});
+
+        if (!task) {
+            res.status(403).send({error: 'You cannot delete just your task'});
+            return;
+        }
+
+        await Task.deleteOne({_id: id});
+        res.send({message: 'Task deleted'});
+    } catch (error) {
+        next(error);
+    }
+})
 
 export default tasksRouter;
